@@ -1,0 +1,239 @@
+# CHALLENGE: ASSETS PROPERTY DI BEKASI
+
+## SKENARIO
+
+Kamu adalah seorang **Developer** di perusahaan properti **"Bekasi Realty Group"**.
+Perusahaan ini memiliki banyak **assets property** (rumah, apartemen, ruko, tanah) yang tersebar di berbagai lokasi di Bekasi.
+
+Manager kamu meminta untuk membuat sistem **inventory property** yang bisa:
+- Menampilkan semua property
+- Filter property berdasarkan kriteria tertentu
+- Sorting property
+- Transformasi data property
+- Menghitung total nilai assets
+
+---
+
+## NB: ATURAN
+
+- **WAJIB** menggunakan **Method Reference** (`ClassName::methodName`, `object::methodName`, `ClassName::new`)
+- **WAJIB** menggunakan **Lambda di Collection** (`forEach`, `removeIf`, `replaceAll`, `sort`, `stream`, `map`, `filter`, `reduce`, dll)
+- Boleh menggunakan `Consumer`, `Function`, `Predicate`, `Supplier`, `Comparator`
+
+---
+
+## DATA MODEL
+
+Buatkan class `PropertyAsset` dengan field berikut:
+
+```java
+public class PropertyAsset {
+    private String id;
+    private String namaProperty;    // contoh: "Rumah Cluster Emerald"
+    private String tipeProperty;    // RUMAH, APARTEMEN, RUKO, TANAH
+    private String lokasi;          // contoh: "Bekasi Timur", "Bekasi Barat", "Bekasi Selatan"
+    private double harga;           // dalam Rupiah
+    private int luasTanah;          // dalam m²
+    private int luasBangunan;       // dalam m²
+    private boolean sudahTerjual;
+    private int tahunDibangun;
+}
+```
+
+---
+
+## DATA SAMPLE
+
+Buatkan minimal **8 data property** di `List<PropertyAsset>`, contoh:
+
+| ID  | Nama Property              | Tipe      | Lokasi          | Harga            | Luas Tanah | Luas Bangunan | Terjual | Tahun |
+|-----|----------------------------|-----------|-----------------|------------------|------------|---------------|---------|-------|
+| P01 | Rumah Cluster Emerald      | RUMAH     | Bekasi Timur    | 1.200.000.000    | 120        | 90            | false   | 2020  |
+| P02 | Apartemen Grand Bekasi     | APARTEMEN | Bekasi Barat    | 650.000.000      | 0          | 45            | true    | 2019  |
+| P03 | Ruko Jalan Ahmad Yani      | RUKO      | Bekasi Selatan  | 2.500.000.000    | 80         | 160           | false   | 2018  |
+| P04 | Tanah Kavling Jatibening   | TANAH     | Bekasi Timur    | 800.000.000      | 200        | 0             | false   | 0     |
+| P05 | Rumah Minimalis Pekayon    | RUMAH     | Bekasi Selatan  | 950.000.000      | 90         | 70            | true    | 2021  |
+| P06 | Apartemen Meikarta Tower B | APARTEMEN | Bekasi Barat    | 450.000.000      | 0          | 36            | false   | 2022  |
+| P07 | Ruko Galaxy Bekasi         | RUKO      | Bekasi Utara    | 3.100.000.000    | 100        | 200           | true    | 2017  |
+| P08 | Rumah Mewah Kemang Pratama | RUMAH     | Bekasi Selatan  | 4.500.000.000    | 300        | 250           | false   | 2023  |
+
+---
+
+## SOAL / TASKS
+
+### TASK 1: Tampilkan Semua Property (forEach + Method Reference)
+
+Buatkan method `tampilkanSemuaProperty()` yang:
+- Menggunakan `list.forEach(...)` dengan **method reference** untuk print semua property
+- Buat method `cetak()` di class `PropertyAsset` yang format output-nya:
+  ```
+  [P01] Rumah Cluster Emerald | RUMAH | Bekasi Timur | Rp 1.200.000.000 | 120m² | Belum Terjual
+  ```
+
+**Hint:** `listProperty.forEach(PropertyAsset::cetak)`
+
+---
+
+### TASK 2: Filter Property yang Belum Terjual (removeIf + Lambda)
+
+Buatkan method yang:
+- Copy list property ke list baru (agar data asli tidak berubah)
+- Gunakan `removeIf(...)` untuk menghapus property yang **sudah terjual**
+- Tampilkan hasilnya dengan `forEach` + method reference
+
+---
+
+### TASK 3: Sorting Property Berdasarkan Harga (sort + Method Reference)
+
+Buatkan method yang:
+- Sort property dari **harga termurah ke termahal**
+- Gunakan `list.sort(Comparator.comparingDouble(PropertyAsset::getHarga))`
+- Tampilkan hasilnya
+
+**Bonus:** Buat juga sorting dari **termahal ke termurah** menggunakan `.reversed()`
+
+---
+
+### TASK 4: Filter Property dengan Stream + Predicate (Lambda di Collection)
+
+Buatkan beberapa filter menggunakan `stream().filter().collect()`:
+
+1. **Filter property tipe RUMAH saja**
+2. **Filter property di lokasi "Bekasi Selatan"**
+3. **Filter property harga di bawah 1 Milyar**
+4. **Filter property yang luas tanah > 100m² DAN belum terjual** (gabungkan Predicate dengan `.and()`)
+
+---
+
+### TASK 5: Transformasi Data dengan map + Method Reference
+
+Buatkan method yang:
+1. Ambil semua **nama property** saja dari list → `stream().map(PropertyAsset::getNamaProperty)`
+2. Ubah semua nama property menjadi **UPPERCASE** → gunakan `String::toUpperCase`
+3. Ambil semua **harga** dan format ke Rupiah → buat static method `formatRupiah(double harga)` lalu gunakan method reference
+
+---
+
+### TASK 6: Hitung Total Nilai Assets (reduce / mapToDouble)
+
+Buatkan method yang:
+1. Hitung **total harga semua property** yang belum terjual menggunakan:
+   ```java
+   .stream()
+   .filter(p -> !p.isSudahTerjual())
+   .mapToDouble(PropertyAsset::getHarga)
+   .sum()
+   ```
+2. Hitung **rata-rata harga property** per tipe (RUMAH, APARTEMEN, RUKO, TANAH)
+
+---
+
+### TASK 7: Grouping dengan Collectors (Advanced Lambda)
+
+Buatkan method yang:
+1. **Group property berdasarkan tipe** → `Collectors.groupingBy(PropertyAsset::getTipeProperty)`
+2. **Group property berdasarkan lokasi** dan hitung jumlah per lokasi
+3. **Group property berdasarkan status terjual/belum** dan tampilkan masing-masing
+
+---
+
+### TASK 8: Constructor Reference + Supplier
+
+Buatkan:
+1. `Supplier<PropertyAsset>` menggunakan **constructor reference** → `PropertyAsset::new`
+2. Buat method `buatPropertyBaru(Supplier<PropertyAsset> supplier)` yang membuat object baru dari supplier
+3. Gunakan `Function<String, PropertyAsset>` dengan constructor yang menerima parameter ID
+
+---
+
+### TASK 9: Custom Comparator dengan Method Reference
+
+Buatkan sorting menggunakan **chained comparator**:
+1. Sort berdasarkan **lokasi** (ascending), lalu **harga** (descending)
+   ```java
+   list.sort(
+       Comparator.comparing(PropertyAsset::getLokasi)
+           .thenComparing(Comparator.comparingDouble(PropertyAsset::getHarga).reversed())
+   );
+   ```
+2. Sort berdasarkan **tipe** lalu **tahun dibangun** (terbaru dulu)
+
+---
+
+### TASK 10: Reporting Final (Gabungan Semua Konsep)
+
+Buatkan method `generateReport()` yang output-nya seperti ini:
+
+```
+========================================
+   LAPORAN ASSETS PROPERTY BEKASI REALTY GROUP
+========================================
+
+Total Property       : 8
+Property Terjual     : 3
+Property Tersedia    : 5
+
+--- PROPERTY TERSEDIA (Sorted by Harga) ---
+1. [P06] Apartemen Meikarta Tower B | Rp 450.000.000
+2. [P04] Tanah Kavling Jatibening   | Rp 800.000.000
+3. [P01] Rumah Cluster Emerald      | Rp 1.200.000.000
+4. [P03] Ruko Jalan Ahmad Yani      | Rp 2.500.000.000
+5. [P08] Rumah Mewah Kemang Pratama | Rp 4.500.000.000
+
+--- TOTAL NILAI ASSETS TERSEDIA ---
+Total: Rp 9.950.000.000
+
+--- DISTRIBUSI PER LOKASI ---
+Bekasi Timur    : 2 property
+Bekasi Barat    : 2 property
+Bekasi Selatan  : 3 property
+Bekasi Utara    : 1 property
+
+========================================
+```
+
+**Syarat:**
+- Semua operasi WAJIB menggunakan **method reference** atau **lambda di collection**
+- TIDAK BOLEH menggunakan for-loop tradisional (`for (int i=0; ...)`)
+- Boleh menggunakan enhanced for-loop hanya jika tidak bisa pakai lambda
+
+---
+
+## BONUS CHALLENGE 🔥
+
+1. Buatkan `BiFunction<String, String, List<PropertyAsset>>` yang menerima **tipe** dan **lokasi**, lalu return filtered list
+2. Buatkan `Map<String, DoubleSummaryStatistics>` yang menampilkan statistik harga per tipe property (min, max, average, count)
+3. Implementasikan **Optional** untuk handle case ketika property tidak ditemukan berdasarkan ID
+
+---
+
+## STRUKTUR PACKAGE YANG DISARANKAN
+
+```
+com.indivaragroup.lambda.exam.property/
+├── model/
+│   └── PropertyAsset.java
+├── data/
+│   └── PropertyDataProvider.java       (Supplier data sample)
+├── service/
+│   └── PropertyService.java            (Logic filter, sort, group, report)
+├── util/
+│   └── PropertyFormatter.java          (Method reference target: cetak, formatRupiah)
+└── PropertyMain.java                   (Main class untuk jalankan semua task)
+```
+
+---
+
+## PENILAIAN
+
+| Kriteria                                    | Bobot |
+|---------------------------------------------|-------|
+| Penggunaan Method Reference yang tepat      | 30%   |
+| Penggunaan Lambda di Collection yang benar  | 30%   |
+| Output sesuai format yang diminta           | 20%   |
+| Clean code & struktur package rapi          | 10%   |
+| Bonus challenge terselesaikan              | 10%   |
+
+---
+
+**Selamat mengerjakan! 💪**
